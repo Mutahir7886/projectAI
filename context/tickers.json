@@ -1,0 +1,45 @@
+[{
+    "index": 0,
+    "symbol": "AKBLTFC6",
+    "name": "Askari Bank(TFC6)",
+    "sectorName": "BILLS AND BONDS",
+    "isETF": false,
+    "isDebt": true,
+    "isGEM": null
+},
+{
+    "index": 1,
+    "symbol": "AKBLTFC7",
+    "name": "Askari Bank(TFC7)",
+    "sectorName": "BILLS AND BONDS",
+    "isETF": false,
+    "isDebt": true,
+    "isGEM": null
+},
+{
+    "index": 2,
+    "symbol": "BAFLTFC6",
+    "name": "Bank Al-Falah(TFC6",
+    "sectorName": "BILLS AND BONDS",
+    "isETF": false,
+    "isDebt": true,
+    "isGEM": null
+},
+{
+    "index": 3,
+    "symbol": "BAFLTFC8",
+    "name": "Bank Alfalah(TFC8)",
+    "sectorName": "BILLS AND BONDS",
+    "isETF": false,
+    "isDebt": true,
+    "isGEM": null
+},
+{
+    "index": 4,
+    "symbol": "BAHLTFC10",
+    "name": "BANK AL HABIB LTD. (10TH ISSUE)",
+    "sectorName": "BILLS AND BONDS",
+    "isETF": false,
+    "isDebt": true,
+    "isGEM": null
+}]
