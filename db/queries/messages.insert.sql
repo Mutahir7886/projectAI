@@ -1,0 +1,1 @@
+INSERT INTO messages (session_id, role, content, metadata, ts) VALUES (?, ?, ?, ?, ?);
