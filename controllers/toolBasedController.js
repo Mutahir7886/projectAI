@@ -15,7 +15,7 @@ const OutputSchema = z.object({
       args: z.record(z.any())
     })
     .nullable(),
-  data: z.any().nullable().optional()
+  data: z.any().nullable()
 });
 
  async function askToolBasedAgent(req, res) {
