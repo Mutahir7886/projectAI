@@ -1,126 +1,155 @@
+// tools/stockTools.js
 const fs = require("fs");
 const path = require("path");
 const { tool } = require("@openai/agents");
 const { z } = require("zod");
 
-const pricesPath = path.resolve("context", "tickers_with_price.json");
-const pricesData = JSON.parse(fs.readFileSync(pricesPath, "utf-8"));
+class NotFoundError extends Error {
+  constructor(message, details = {}) {
+    super(message);
+    this.name = "NotFoundError";
+    this.details = details;
+  }
+}
 
-// TOOL 1 — get_price
- const getPriceTool = tool({
+const PriceRecord = z.object({
+  symbol: z.string().min(1),
+  name: z.string().min(1),
+  price: z.number().nullable(),
+  currency: z.string().optional().nullable(),
+  asOf: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  sectorName: z.string().optional().nullable()
+});
+
+const dataPath = path.resolve("context", "tickers_with_price.json")
+let rawData = [];
+try {
+  rawData = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
+} catch (err) {
+  throw new Error(`Failed to load tickers_with_price.json: ${err.message}`);
+}
+
+const pricesData = rawData.map((r, idx) => {
+  try {
+    return PriceRecord.parse(r);
+  } catch (e) {
+    throw new Error(`Invalid record at index ${idx}: ${JSON.stringify(e.errors)}`);
+  }
+});
+
+function findBySymbol(sym) {
+  if (!sym) return null;
+  const s = sym.toUpperCase();
+  const rec = pricesData.find((r) => r.symbol.toUpperCase() === s);
+  return rec || null;
+}
+
+// Tool: get_price   
+const getPriceTool = tool({
   name: "get_price",
-  description: "Get the current price of a stock by its symbol",
-  parameters: z.object({
-    symbol: z.string().describe("Stock symbol, e.g. HBL, AAPL, TSLA")
-  }),
+  description: "Return price data for a stock symbol (PSX).",
+  parameters: z
+    .object({
+      symbol: z
+        .string()
+        .regex(/^[A-Z0-9]{1,10}$/)
+        .describe("PSX ticker symbol (uppercase)")
+    })
+    .strict(),
   execute: async (input) => {
-    const sym = input.symbol.toUpperCase().trim();
-    const record = pricesData.find((r) => r.symbol.toUpperCase() === sym);
-
-    if (!record) {
-      return {
-        explanation: `Stock with symbol '${input.symbol}' not found.`,
-        toolUsed: { name: "get_price", args: { symbol: input.symbol } },
-        data: null
-      };
+    const sym = String(input.symbol).toUpperCase();
+    const rec = findBySymbol(sym);
+    if (!rec) {
+      throw new NotFoundError(`Symbol '${sym}' not found`, { symbol: sym });
     }
-
-    const currency = record.currency ?? "PKR";
-    const asOf = record.asOf ?? new Date().toISOString().slice(0, 10);
-
+    if (rec.price === null || rec.price === undefined) {
+      throw new NotFoundError(`Price data not available for '${sym}'`, { symbol: sym });
+    }
+    // Return plain data object
     return {
-      explanation: `${record.name} trades at ${currency} ${record.price} as of ${asOf}.`,
-      toolUsed: { name: "get_price", args: { symbol: record.symbol } },
-      data: {
-        symbol: record.symbol,
-        price: record.price,
-        currency,
-        asOf
-      }
+      symbol: rec.symbol,
+      price: rec.price,
+      currency: rec.currency || "PKR",
+      asOf: rec.asOf || new Date().toISOString().slice(0, 10)
     };
   }
 });
 
-// TOOL 2 — get_company
- const getCompanyTool = tool({
+
+// Tool: get_company 
+const getCompanyTool = tool({
   name: "get_company",
-  description: "Get details of a company by its stock symbol",
-  parameters: z.object({
-    symbol: z.string().describe("Stock symbol, e.g. HBL, AAPL, TSLA")
-  }),
+  description: "Return company details for a stock symbol.",
+  parameters: z
+    .object({
+      symbol: z.string().regex(/^[A-Z0-9]{1,10}$/).describe("PSX ticker symbol")
+    })
+    .strict(),
   execute: async (input) => {
-    const sym = input.symbol.toUpperCase().trim();
-    const record = pricesData.find((r) => r.symbol.toUpperCase() === sym);
-
-    if (!record) {
-      return {
-        explanation: `No company found for symbol '${input.symbol}'.`,
-        toolUsed: { name: "get_company", args: { symbol: input.symbol } },
-        data: null
-      };
+    const sym = String(input.symbol).toUpperCase();
+    const rec = findBySymbol(sym);
+    if (!rec) {
+      throw new NotFoundError(`Symbol '${sym}' not found`, { symbol: sym });
     }
-
     return {
-      explanation: `Company lookup successful: ${record.name} belongs to sector '${record.sectorName}'.`,
-      toolUsed: { name: "get_company", args: { symbol: record.symbol } },
-      data: {
-        symbol: record.symbol,
-        name: record.name,
-        sectorName: record.sectorName || "Unknown"
-      }
+      symbol: rec.symbol,
+      name: rec.name,
+      sectorName: rec.sectorName || "Unknown"
     };
   }
 });
 
-// TOOL 3 — search_companies
- const searchCompaniesTool = tool({
+
+// Tool: search_companies
+
+const uniqueSectors = Array.from(
+  new Set(pricesData.map((r) => (r.sectorName || "").toUpperCase()).filter(Boolean))
+).sort();
+
+let SectorEnum = null;
+if (uniqueSectors.length > 0) {
+  SectorEnum = z.enum(uniqueSectors);
+}
+
+const searchCompaniesParams = SectorEnum
+  ? z.object({
+      query: z.string().nullable().describe("Search by company name substring"),
+      sector: SectorEnum.nullable().describe("Exact sector name (from dataset)")
+    }).strict()
+  : z.object({
+      query: z.string().nullable().describe("Search by company name substring"),
+      sector: z.string().nullable().describe("Sector name")
+    }).strict();
+
+const searchCompaniesTool = tool({
   name: "search_companies",
-  description: "Search companies by optional name query and/or sector",
-  parameters: z.object({
-    query: z.string().nullable().describe("Search by company name substring"),
-    sector: z.string().nullable().describe("Filter by sector name")
-  }),
+  description: "Search companies by (optional) name substring and/or sector.",
+  parameters: searchCompaniesParams,
   execute: async (input) => {
-    const query = input.query ? input.query.toLowerCase() : null;
-    const sector = input.sector ? input.sector.toLowerCase() : null;
+    const query = input.query ? String(input.query).toLowerCase() : null;
+    const sector = input.sector ? String(input.sector).toUpperCase() : null;
 
     let results = pricesData;
-
     if (query) {
-      results = results.filter((c) =>
-        c.name.toLowerCase().includes(query)
-      );
+      results = results.filter((r) => r.name.toLowerCase().includes(query));
     }
-
     if (sector) {
-      results = results.filter(
-        (c) => (c.sectorName || "").toLowerCase() === sector
-      );
+      results = results.filter((r) => (r.sectorName || "").toUpperCase() === sector);
     }
 
-    if (results.length === 0) {
-      return {
-        explanation: `No companies found for query='${input.query || ""}' sector='${input.sector || ""}'.`,
-        toolUsed: { name: "search_companies", args: input },
-        data: []
-      };
-    }
-
-    return {
-      explanation: `Found ${results.length} companies matching search criteria.`,
-      toolUsed: { name: "search_companies", args: input },
-      data: results.map((r) => ({
-        symbol: r.symbol,
-        name: r.name,
-        sectorName: r.sectorName || "Unknown"
-      }))
-    };
+    return results.map((r) => ({
+      symbol: r.symbol,
+      name: r.name,
+      sectorName: r.sectorName || "Unknown"
+    }));
   }
 });
-
 
 module.exports = {
   getPriceTool,
   getCompanyTool,
   searchCompaniesTool,
+  NotFoundError,
+  SectorEnum,
+  uniqueSectors
 };

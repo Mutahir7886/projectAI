@@ -1,0 +1,1 @@
+UPDATE sessions SET active_symbol = ?, referenced_symbols = ?, last_op = ?, summary = ? WHERE id = ?;

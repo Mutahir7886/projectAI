@@ -3344,7 +3344,7 @@
   {
     "index": 292,
     "symbol": "COTT",
-    "name": "",
+    "name": "COTT corporation",
     "sectorName": "TEXTILE COMPOSITE",
     "isETF": false,
     "isDebt": false,
@@ -4076,7 +4076,7 @@
   {
     "index": 353,
     "symbol": "EPCLR1",
-    "name": "",
+    "name": "EPCLR1 corporation",
     "sectorName": "CHEMICAL",
     "isETF": false,
     "isDebt": false,
@@ -4448,7 +4448,7 @@
   {
     "index": 384,
     "symbol": "FFLNV",
-    "name": "",
+    "name": "FFLNV corporation",
     "sectorName": "FOOD & PERSONAL CARE PRODUCTS",
     "isETF": false,
     "isDebt": false,
@@ -4736,7 +4736,7 @@
   {
     "index": 408,
     "symbol": "GAILR1",
-    "name": "",
+    "name": "GAILR1 corporation",
     "sectorName": "",
     "isETF": false,
     "isDebt": false,
@@ -5024,7 +5024,7 @@
   {
     "index": 432,
     "symbol": "GHGLR1",
-    "name": "",
+    "name": "GHGLR1 corporation",
     "sectorName": "GLASS & CERAMICS",
     "isETF": false,
     "isDebt": false,
@@ -5648,7 +5648,7 @@
   {
     "index": 484,
     "symbol": "HSMR1",
-    "name": "",
+    "name": "HSMR1 corporation",
     "sectorName": "SUGAR & ALLIED INDUSTRIES",
     "isETF": false,
     "isDebt": false,
@@ -5816,7 +5816,7 @@
   {
     "index": 498,
     "symbol": "ICLR1",
-    "name": "",
+    "name": "ICLR1 corporation",
     "sectorName": "CHEMICAL",
     "isETF": false,
     "isDebt": false,
@@ -6044,7 +6044,7 @@
   {
     "index": 517,
     "symbol": "INL",
-    "name": "",
+    "name": "INL corporation",
     "sectorName": "INV. BANKS / INV. COS. / SECURITIES COS.",
     "isETF": false,
     "isDebt": false,
@@ -6428,7 +6428,7 @@
   {
     "index": 549,
     "symbol": "JVDCR1",
-    "name": "",
+    "name": "JVDCR1corporation",
     "sectorName": "CEMENT",
     "isETF": false,
     "isDebt": false,
@@ -6992,7 +6992,7 @@
   {
     "index": 596,
     "symbol": "MERITR1",
-    "name": "",
+    "name": "MERITR1 corporation",
     "sectorName": "PAPER, BOARD & PACKAGING",
     "isETF": false,
     "isDebt": false,
@@ -9331,7 +9331,7 @@
   {
     "index": 791,
     "symbol": "SLSOPP",
-    "name": "",
+    "name": "SLSOPP corporation",
     "sectorName": "SUGAR & ALLIED INDUSTRIES",
     "isETF": false,
     "isDebt": false,
@@ -9343,7 +9343,7 @@
   {
     "index": 792,
     "symbol": "SLSOPVI",
-    "name": "",
+    "name": "SLSOPVI corporation",
     "sectorName": "SUGAR & ALLIED INDUSTRIES",
     "isETF": false,
     "isDebt": false,
@@ -9427,7 +9427,7 @@
   {
     "index": 799,
     "symbol": "SMLR1",
-    "name": "",
+    "name": "SMLR1 corporation",
     "sectorName": "SUGAR & ALLIED INDUSTRIES",
     "isETF": false,
     "isDebt": false,
@@ -9535,7 +9535,7 @@
   {
     "index": 808,
     "symbol": "SPLCTFC3",
-    "name": "",
+    "name": "SPLCTFC3 corporation",
     "sectorName": "LEASING COMPANIES",
     "isETF": false,
     "isDebt": false,
@@ -10230,7 +10230,7 @@
   {
     "index": 866,
     "symbol": "UBLGSFO",
-    "name": "",
+    "name": "UBLGSFO corporation",
     "sectorName": "",
     "isETF": false,
     "isDebt": false,

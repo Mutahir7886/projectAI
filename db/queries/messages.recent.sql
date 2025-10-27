@@ -1,0 +1,1 @@
+SELECT * FROM messages WHERE session_id = ? ORDER BY ts DESC LIMIT ?;
